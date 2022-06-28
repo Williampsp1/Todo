@@ -14,7 +14,7 @@ struct TodoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(
-                store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(uuid: UUID.init, mainQueue: .main)))
+                store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(uuid: UUID.init, mainQueue: .main, notificationCenter: UNUserNotificationCenter.current() )))
         }
     }
     

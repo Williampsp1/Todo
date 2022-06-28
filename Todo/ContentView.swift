@@ -10,6 +10,8 @@ import ComposableArchitecture
 
 struct AppState: Equatable {
     var todos: IdentifiedArrayOf<Todo> = []
+    let content = UNMutableNotificationContent()
+    let notificationInterval: Double = 5
 }
 
 enum AppAction: Equatable {
@@ -20,11 +22,15 @@ enum AppAction: Equatable {
     case clearCompletedTodos
     case moveTodo(source: IndexSet, destination: Int)
     case sortCompletedTodos
+    case showNotificationPermission
+    case addNotification
+    case openSettings
 }
 
 struct AppEnvironment {
     let uuid: () -> UUID
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var notificationCenter: UNUserNotificationCenter
 }
 
 let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
@@ -83,6 +89,39 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             
         case let .todo(index, action: .moveSubTodo(source, destination)):
             return .none
+            
+        case .addNotification:
+            state.content.title = "Todos"
+            state.content.subtitle = "Review your incomplete Todos for today!"
+            state.content.sound = UNNotificationSound.default
+            
+            // show this notification only if there are any incomplete todos
+            if !state.todos.allSatisfy(\.checked) {
+                
+                environment.notificationCenter.removeAllPendingNotificationRequests()
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: state.notificationInterval, repeats: false)
+                
+                // choose notification identifier
+                let request = UNNotificationRequest(identifier: "TODO", content: state.content, trigger: trigger)
+                
+                // add our notification request
+                environment.notificationCenter.add(request)
+            }
+            return .none
+        case .showNotificationPermission:
+            environment.notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                if success {
+                    print("Permissions accepted!")
+                } else if let error = error {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            return .none
+            
+        case .openSettings:
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            return .none
         }
     }
 )
@@ -101,6 +140,15 @@ struct ContentView: View {
                     .onDelete { viewStore.send(.removeTodo($0)) }
                     .onMove { viewStore.send(.moveTodo(source: $0, destination: $1))}
                 }
+    
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                    print("App is in foreground")
+                    viewStore.send(.showNotificationPermission)
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+                    print("App is in background")
+                    viewStore.send(.addNotification)
+                }
             }
             .navigationTitle("Todos")
             .toolbar {
@@ -118,6 +166,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         
         ContentView(
-            store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(uuid: UUID.init, mainQueue: .main)))
+            store: Store(initialState: AppState(), reducer: appReducer, environment: AppEnvironment(uuid: UUID.init, mainQueue: .main, notificationCenter: UNUserNotificationCenter.current())))
     }
 }

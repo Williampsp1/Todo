@@ -42,6 +42,14 @@ struct ToolbarItems: View {
                 }) {
                     Text("Clear completed todos")
                 }
+                Button(action: {
+                    viewStore.send(.openSettings)
+                }){
+                    HStack {
+                        Text("Notification settings")
+                        Image(systemName: "bell")
+                    }
+                }
             }
         label: {
             Image(systemName: "gearshape")
