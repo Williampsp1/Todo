@@ -16,6 +16,6 @@ Features
 <img src= "https://user-images.githubusercontent.com/43650249/173990792-769b1c66-e500-4ae4-9eb7-970c26de23fa.png" width ="300" height="590">
 <img src= "https://user-images.githubusercontent.com/43650249/173990931-fd476cba-ece9-4677-aea3-33d7e5fbf823.png" width ="300" height="590">
 <img src= "https://user-images.githubusercontent.com/43650249/173991021-0ed514ac-2fd7-455c-a9cf-b640d8edbe02.png" width ="300" height="590">
-<img src= "https://user-images.githubusercontent.com/43650249/173991967-902b18c6-8694-4477-ad83-1f3471057ab7.png" width ="300" height="200" align="top">
+<img src= "https://user-images.githubusercontent.com/43650249/176083654-bfe93071-3c65-4f7a-99b0-8c9d4ac4d8a7.png" width ="300" height="590">
 <img src= "https://user-images.githubusercontent.com/43650249/176083137-77186806-bcc3-4ae6-b2e9-b556e6d0795e.png" width ="300" height="590">
 </p>
